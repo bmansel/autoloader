@@ -15,7 +15,7 @@ import string
 
 
 #import time
-from l3a_plate import Plate # l not 1
+from auto_loader import Plate # l not 1
 
 
 class MainWindow(tk.Frame):
@@ -231,7 +231,7 @@ class TopWindow(tk.Toplevel):
     def save_well(self):
         print(type(self.plate))
         self.plate.well_list[self.row + str(self.col)] = Plate.Well( 
-            id = self.row + str(self.col), is_background= self.str_var_bkg.get(), 
+            ident = self.row + str(self.col), is_background= self.str_var_bkg.get(), 
             run_order= self.str_var_run_order.get(), smp_name= self.str_var_smp_name.get())
         self.root.draw_order_label(self.root.well_labels, self.row, self.col)   
         self.plate.save(self.plate.filename)

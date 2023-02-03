@@ -94,13 +94,15 @@ class AutoLoader():
         A1_pos = (0.0,0.0), 
         wash_pos = (-32.5,-38.9), 
         z_top = 0.0, 
-        z_bottom = 0.0
+        z_bottom = 0.0,
+        well_space = 9.0
         ):
         
         self.A1_pos = A1_pos
         self.wash_pos = wash_pos
         self.z_top = z_top
         self.z_bottom = z_bottom
+        self.well_space = well_space
     
     def get_xpos(self):
         return caget("13a:AutoSMP:X.VAL")
@@ -129,22 +131,22 @@ class AutoLoader():
         f"Moving to x={v[0]}, y={v[1]}, z={v[2]}"
         moving = True
         while moving:
-            if self.get_xpos == v[0] and \
-                self.get_xpos == v[1] and \
-                self.get_xpos == v[2]:
+            if self.get_xpos() == v[0] and \
+                self.get_xpos() == v[1] and \
+                self.get_xpos() == v[2]:
                 moving=False
                 f"Finished moving to x={v[0]}, y={v[1]}, z={v[2]}"
                 return
             sleep(0.3)
-            f"Current position: x={self.get_xpos}, y={self.get_xpos}, z={self.get_xpos}.\r"
+            f"Current position: x={self.get_xpos()}, y={self.get_xpos()}, z={self.get_xpos()}.\r"
                 
     def mv_2_well(self, ident):
         pos = self.well_2_coord(ident)
         self.set_zpos(self.z_top) # set Z up
-        self.check_mv((self.get_xpos, self.get_ypos, self.z_top)) 
+        self.check_mv((self.get_xpos(), self.get_ypos(), self.z_top)) 
         
         self.set_xpos(pos[0]) # move x
-        self.check_mv((pos[0], self.get_ypos, self.z_top)) 
+        self.check_mv((pos[0], self.get_ypos(), self.z_top)) 
         
         self.set_ypos(pos[1]) # move y
         self.check_mv((pos[0], pos[1], self.z_top)) 
@@ -155,10 +157,10 @@ class AutoLoader():
 def mv_2_wash(self):
 
         self.set_zpos(self.z_top) # set Z up
-        self.check_mv((self.get_xpos, self.get_ypos, self.z_top)) 
+        self.check_mv((self.get_xpos(), self.get_ypos(), self.z_top)) 
         
         self.set_xpos(self.wash_pos[0]) # move x
-        self.check_mv((self.wash_pos[0], self.get_ypos, self.z_top)) 
+        self.check_mv((self.wash_pos[0], self.get_ypos(), self.z_top)) 
         
         self.set_ypos(self.wash_pos[1]) # move y
         self.check_mv((self.wash_pos[0], self.wash_pos[1], self.z_top)) 
