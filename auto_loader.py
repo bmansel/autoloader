@@ -128,17 +128,17 @@ class AutoLoader():
         return (x,y)
 
     def check_mv(self,v):
-        f"Moving to x={v[0]}, y={v[1]}, z={v[2]}"
+        print(f"Moving to x={v[0]}, y={v[1]}, z={v[2]}")
         moving = True
         while moving:
             if self.get_xpos() == v[0] and \
-                self.get_xpos() == v[1] and \
+                self.get_ypos() == v[1] and \
                 self.get_xpos() == v[2]:
                 moving=False
-                f"Finished moving to x={v[0]}, y={v[1]}, z={v[2]}"
+                print(f"Finished moving to x={v[0]}, y={v[1]}, z={v[2]}")
                 return
             sleep(0.3)
-            f"Current position: x={self.get_xpos()}, y={self.get_xpos()}, z={self.get_xpos()}.\r"
+            print(f"Current position: x={self.get_xpos()}, y={self.get_ypos()}, z={self.get_zpos()}.\r")
                 
     def mv_2_well(self, ident):
         pos = self.well_2_coord(ident)
