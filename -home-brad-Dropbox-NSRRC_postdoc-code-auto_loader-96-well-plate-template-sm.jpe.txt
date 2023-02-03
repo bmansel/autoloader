@@ -1,0 +1,4 @@
+/home/brad/Dropbox/NSRRC_postdoc/code/auto_loader/96-well-plate-template-sm.jpeg
+/home/brad/Dropbox/NSRRC_postdoc/code/auto_loader/Brads_test.py
+/home/brad/Dropbox/NSRRC_postdoc/code/auto_loader/l3a_plate.py
+/home/brad/Dropbox/NSRRC_postdoc/code/auto_loader/test2.py
