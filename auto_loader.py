@@ -130,16 +130,16 @@ class AutoLoader():
     def check_mv(self,v):
         print(f"Moving to x={v[0]}, y={v[1]}, z={v[2]}")
         moving = True
+        step = 0
         while moving:
-            if self.get_xpos() == v[0] and \
-                self.get_ypos() == v[1] and \
-                self.get_xpos() == v[2]:
+            if (self.get_xpos() == v[0] and self.get_ypos() == v[1] and self.get_zpos() == v[2]):
                 moving=False
                 print(f"Finished moving to x={v[0]}, y={v[1]}, z={v[2]}")
                 return
             sleep(0.3)
-            print(f"Current position: x={self.get_xpos()}, y={self.get_ypos()}, z={self.get_zpos()}.\r")
-                
+            print(f"step is {step}, current position: x={self.get_xpos()}, y={self.get_ypos()}, z={self.get_zpos()}.\r")
+            step += 1
+
     def mv_2_well(self, ident):
         pos = self.well_2_coord(ident)
         self.set_zpos(self.z_top) # set Z up
@@ -152,7 +152,7 @@ class AutoLoader():
         self.check_mv((pos[0], pos[1], self.z_top)) 
         
         self.set_zpos(self.z_top) # set Z down 
-        self.check_mv((pos[0], pos[1], self.z_down)) 
+        self.check_mv((pos[0], pos[1], self.z_bottom)) 
 
 def mv_2_wash(self):
 
@@ -166,7 +166,7 @@ def mv_2_wash(self):
         self.check_mv((self.wash_pos[0], self.wash_pos[1], self.z_top)) 
         
         self.set_zpos(self.z_top) # set Z down 
-        self.check_mv((self.wash_pos[0], self.wash_pos[1], self.z_down)) 
+        self.check_mv((self.wash_pos[0], self.wash_pos[1], self.z_bottom)) 
     
 
 
