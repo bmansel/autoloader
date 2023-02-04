@@ -94,7 +94,7 @@ class AutoLoader():
         A1_pos = (0.0,0.0), 
         wash_pos = (-32.5,-38.9), 
         z_top = 0.0, 
-        z_bottom = 0.0,
+        z_bottom = -15.0,
         well_space = 9.0
         ):
         
@@ -105,13 +105,13 @@ class AutoLoader():
         self.well_space = well_space
     
     def get_xpos(self):
-        return caget("13a:AutoSMP:X.VAL")
+        return round(caget("13a:AutoSMP:X.RBV"), 2)
 
     def get_ypos(self):
-        return caget("13a:AutoSMP:Y.VAL")
+        return round(caget("13a:AutoSMP:Y.RBV"), 2)
     
     def get_zpos(self):
-        return caget("13a:AutoSMP:Z.VAL")
+        return round(caget("13a:AutoSMP:Z.RBV"), 2)
 
     def set_xpos(self,v):
         caput("13a:AutoSMP:X.VAL",v)
@@ -123,8 +123,8 @@ class AutoLoader():
         caput("13a:AutoSMP:Z.VAL",v)
 
     def well_2_coord(self, ident):
-        x  = self.A1_pos[0] + float(ident[1:]) * self.well_space
-        y =  self.A1_pos[0] + (ord(ident[0])- 64) * self.well_space # ID must be capital
+        x  = self.A1_pos[0] + (float(ident[1:])-1) * self.well_space
+        y =  self.A1_pos[0] + -1*(ord(ident[0])- 64) * self.well_space # ID must be capital move in neg direction
         return (x,y)
 
     def check_mv(self,v):
@@ -151,10 +151,10 @@ class AutoLoader():
         self.set_ypos(pos[1]) # move y
         self.check_mv((pos[0], pos[1], self.z_top)) 
         
-        self.set_zpos(self.z_top) # set Z down 
+        self.set_zpos(self.z_bottom) # set Z down 
         self.check_mv((pos[0], pos[1], self.z_bottom)) 
 
-def mv_2_wash(self):
+    def mv_2_wash(self):
 
         self.set_zpos(self.z_top) # set Z up
         self.check_mv((self.get_xpos(), self.get_ypos(), self.z_top)) 
@@ -165,7 +165,7 @@ def mv_2_wash(self):
         self.set_ypos(self.wash_pos[1]) # move y
         self.check_mv((self.wash_pos[0], self.wash_pos[1], self.z_top)) 
         
-        self.set_zpos(self.z_top) # set Z down 
+        self.set_zpos(self.z_bottom) # set Z down 
         self.check_mv((self.wash_pos[0], self.wash_pos[1], self.z_bottom)) 
     
 
