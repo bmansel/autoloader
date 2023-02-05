@@ -2,6 +2,7 @@ import auto_loader
 
 al = auto_loader.AutoLoader()
 
+<<<<<<< HEAD
 
 al.mv_2_well("A1")
 al.mv_2_wash()
@@ -19,3 +20,8 @@ al.mv_2_well("G10")
 al.mv_2_wash()
 al.mv_2_well("H12")
 al.mv_2_wash()
+=======
+#al.get_xpos()
+al.mv_2_well("A1")
+al.mv_2_well("A7")
+>>>>>>> 23038510e733342b6e5b2c39baddecde1b88dacc
