@@ -1,5 +1,6 @@
 #13A_plate.py
 #import typing
+import threading
 from typing import NamedTuple
 from epics import caget, caput
 from time import sleep
@@ -92,16 +93,18 @@ class AutoLoader():
     def __init__(
         self, 
         A1_pos = (0.0,0.0), 
-        wash_pos = (-32.5,-38.9), 
-        z_top = 0.0, 
-        z_bottom = -15.0,
+        wash_pos = (-31.75,-39.5), 
+        z_up = 0.0, 
+        z_down = -15.0,
+        z_wash_down = -20.0,
         well_space = 9.0
         ):
         
         self.A1_pos = A1_pos
         self.wash_pos = wash_pos
-        self.z_top = z_top
-        self.z_bottom = z_bottom
+        self.z_up = z_up
+        self.z_down = z_down
+        self.z_wash_down = z_wash_down
         self.well_space = well_space
     
     def get_xpos(self):
@@ -124,7 +127,7 @@ class AutoLoader():
 
     def well_2_coord(self, ident):
         x  = self.A1_pos[0] + (float(ident[1:])-1) * self.well_space
-        y =  self.A1_pos[0] + -1*(ord(ident[0])- 64) * self.well_space # ID must be capital move in neg direction
+        y =  self.A1_pos[0] + -1*(ord(ident[0].upper())- 65) * self.well_space # ID must be capital move in neg direction
         return (x,y)
 
     def check_mv(self,v):
@@ -137,36 +140,41 @@ class AutoLoader():
                 print(f"Finished moving to x={v[0]}, y={v[1]}, z={v[2]}")
                 return
             sleep(0.3)
-            print(f"step is {step}, current position: x={self.get_xpos()}, y={self.get_ypos()}, z={self.get_zpos()}.\r")
+            print(f"step is {step}, current position: x={self.get_xpos()}, y={self.get_ypos()}, z={self.get_zpos()}.", end="\r")
             step += 1
 
     def mv_2_well(self, ident):
         pos = self.well_2_coord(ident)
-        self.set_zpos(self.z_top) # set Z up
-        self.check_mv((self.get_xpos(), self.get_ypos(), self.z_top)) 
+        self.set_zpos(self.z_up) # set Z up
+        self.check_mv((self.get_xpos(), self.get_ypos(), self.z_up)) 
         
-        self.set_xpos(pos[0]) # move x
-        self.check_mv((pos[0], self.get_ypos(), self.z_top)) 
+        #self.set_xpos(pos[0]) # move x
+        x = threading.Thread(target=self.set_xpos, args=[pos[0]])
+        x.start()
+        #self.check_mv((pos[0], self.get_ypos(), self.z_up)) 
         
-        self.set_ypos(pos[1]) # move y
-        self.check_mv((pos[0], pos[1], self.z_top)) 
+        #self.set_ypos(pos[1]) # move y
+        y = threading.Thread(target=self.set_ypos, args=[pos[1]])
+        y.start()
+        self.check_mv((pos[0], pos[1], self.z_up)) 
         
-        self.set_zpos(self.z_bottom) # set Z down 
-        self.check_mv((pos[0], pos[1], self.z_bottom)) 
+        self.set_zpos(self.z_down) # set Z down 
+        self.check_mv((pos[0], pos[1], self.z_down)) 
 
     def mv_2_wash(self):
 
-        self.set_zpos(self.z_top) # set Z up
-        self.check_mv((self.get_xpos(), self.get_ypos(), self.z_top)) 
+        self.set_zpos(self.z_up) # set Z up
+        self.check_mv((self.get_xpos(), self.get_ypos(), self.z_up)) 
         
-        self.set_xpos(self.wash_pos[0]) # move x
-        self.check_mv((self.wash_pos[0], self.get_ypos(), self.z_top)) 
+        x = threading.Thread(target=self.set_xpos, args=[self.wash_pos[0]])
+        x.start()
+        y = threading.Thread(target=self.set_ypos, args=[self.wash_pos[1]])
+        y.start()
         
-        self.set_ypos(self.wash_pos[1]) # move y
-        self.check_mv((self.wash_pos[0], self.wash_pos[1], self.z_top)) 
+        self.check_mv((self.wash_pos[0], self.wash_pos[1], self.z_up)) 
         
-        self.set_zpos(self.z_bottom) # set Z down 
-        self.check_mv((self.wash_pos[0], self.wash_pos[1], self.z_bottom)) 
+        self.set_zpos(self.z_wash_down) # set Z down 
+        self.check_mv((self.wash_pos[0], self.wash_pos[1], self.z_wash_down)) 
     
 
 
