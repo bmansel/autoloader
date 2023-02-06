@@ -89,7 +89,7 @@ class Plate:
             self.smp_name = smp_name
             self.well_space = 9
 
-class AutoLoader():
+class AutoLoader(Plate):
     def __init__(
         self, 
         A1_pos = (0.0,0.0), 
@@ -97,7 +97,7 @@ class AutoLoader():
         z_up = 0.0, 
         z_down = -15.0,
         z_wash_down = -20.0,
-        well_space = 9.0
+        plate_fname = None
         ):
         
         self.A1_pos = A1_pos
@@ -105,8 +105,50 @@ class AutoLoader():
         self.z_up = z_up
         self.z_down = z_down
         self.z_wash_down = z_wash_down
-        self.well_space = well_space
-    
+        self.plate_fname = plate_fname
+        if plate_fname is not None:
+            self.q_in = self.parse_plate(plate_fname)
+        super().__init__()
+        super().Well().__init__()
+        self.well_space = Plate().Well().well_space
+
+    def parse_plate(self, plate_fname):
+        '''
+            for now we can just load 2 lines of the .plt file...
+        '''
+        q_in = []
+        q_pos = None
+        with open(plate_fname,'r') as f:
+            for line in f:
+                if (line.split()[0] != "plate") and \
+                (line.split()[0] != "well") and \
+                (len(line.split()[0]) < 4):
+                    # must be new well
+                    current_well = line.split()[0]
+                    if q_pos is None:
+                        q_pos = 0
+                    else:
+                        q_pos += 1
+                    info =  {"well_id": line.split()[0]}
+                    q_in.append(info)
+                if (line.split()[0] == "well") and (line.split()[1] == current_well):
+                    if "line.split()[2]" == "run_order":
+                        q_in[q_pos][line.split()[2]] = int(line.split()[3])
+                    else:
+                        q_in[q_pos][line.split()[2]] = line.split()[3]
+        # let's just bubble sort..
+        n = len(q_in)
+        swapped = False
+        for i in range(n-1):
+            for j in range(0, n-1-1):
+                if q_in[j]["run_order"] > q_in[j+1]["run_order"]:
+                    swapped = True
+                    q_in[j], q_in[j+1] = q_in[j+1], q_in[j]
+            if not swapped:
+                break
+                
+        return q_in
+
     def get_xpos(self):
         return round(caget("13a:AutoSMP:X.RBV"), 2)
 
